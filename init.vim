@@ -19,6 +19,8 @@ Plug 'romgrk/barbar.nvim'
 
 " Темы и подсветка
 Plug 'morhetz/gruvbox'
+Plug 'folke/tokyonight.nvim'
+Plug 'navarasu/onedark.nvim'
 
 call plug#end()
 
@@ -78,6 +80,20 @@ let g:tagbar_autofocus = 0
 
 " Настройки автодополнения
 set completeopt=menuone,noinsert,noselect
+
+lua << EOF
+local colorschemes = { "gruvbox", "tokyonight", "onedark" }
+local current = 1
+
+function SwitchColorScheme()
+  current = current + 1
+  if current > #colorschemes then
+    current = 1
+  end
+  vim.cmd("colorscheme " .. colorschemes[current])
+  print("Цветовая схема: " .. colorschemes[current])
+end
+EOF
 
 lua << EOF
 -- Функция для настройки привязок клавиш при присоединении nvim-tree
@@ -374,6 +390,9 @@ nnoremap <silent> <C-S-w> :call CloseTabsToRight()<CR>
 
 " Назначение горячей клавиши Ctrl+Shift+L
 nnoremap <silent> <C-S-l> :call CloseTabsToLeft()<CR>
+
+" Переключение цветовой схемы с помощью <Leader>cs
+nnoremap <silent> <Leader>cs :lua SwitchColorScheme()<CR>
 
 " ========================================
 " Автоматическое открытие nvim-tree и toggleterm при запуске NeoVIM (IDE режим)

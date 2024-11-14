@@ -21,6 +21,10 @@ Plug 'romgrk/barbar.nvim'
 Plug 'morhetz/gruvbox'
 Plug 'folke/tokyonight.nvim'
 Plug 'navarasu/onedark.nvim'
+Plug 'EdenEast/nightfox.nvim'          " Набор цветовых схем с различными стилями
+Plug 'Mofiqul/dracula.nvim'           " Тёмная цветовая схема, основанная на популярной теме Dracula
+Plug 'altercation/vim-colors-solarized' " Классическая цветовая схема с поддержкой светлой и тёмной тем
+Plug 'EdenEast/everforest'            " Тёмная цветовая схема с зелёными акцентами
 
 call plug#end()
 
@@ -39,7 +43,11 @@ set tabstop=4
 set shiftwidth=4
 set expandtab
 set background=dark
-colorscheme gruvbox
+
+" colorscheme gruvbox
+" colorscheme solarized
+" colorscheme everforest
+colorscheme dracula
 
 set foldmethod=syntax
 set nofoldenable
@@ -82,7 +90,7 @@ let g:tagbar_autofocus = 0
 set completeopt=menuone,noinsert,noselect
 
 lua << EOF
-local colorschemes = { "gruvbox", "tokyonight", "onedark" }
+local colorschemes = { "gruvbox", "tokyonight", "onedark", "nightfox", "dracula", "solarized", "everforest" }
 local current = 1
 
 function SwitchColorScheme()
@@ -112,6 +120,42 @@ local function my_on_attach(bufnr)
   vim.keymap.set('n', '<2-LeftMouse>', api.node.open.tab, opts)
 end
 EOF
+
+" ========================================
+" Настройка nightfox.nvim
+" ========================================
+lua << EOF
+require('nightfox').setup({
+    options = {
+        styles = {
+            comments = "italic",
+            keywords = "bold",
+            functions = "italic,bold",
+            variables = "NONE",
+        },
+        transparent = false, -- Если хотите прозрачный фон
+    },
+})
+EOF
+
+" ========================================
+" Настройка dracula.nvim
+" ========================================
+lua << EOF
+require('dracula').setup({
+    -- Возможные опции настройки
+    transparent_bg = false,
+    -- Другие опции см. в документации плагина
+})
+EOF
+
+" ========================================
+" Настройка solarized
+" ========================================
+set background=dark " или light для светлой темы
+
+" Дополнительные настройки solarized (опционально)
+let g:solarized_termcolors=256
 
 " Настройка nvim-tree.lua
 lua << EOF

@@ -74,4 +74,6 @@ In neovim command: `:CocInstall coc-go` && `:PlugInstall`
 
 Настройте ваш терминал или NeoVIM на использование установленного шрифта.
 
+##### Switching between coloschemas
 
+`:colorscheme dracula`

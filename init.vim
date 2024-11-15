@@ -30,6 +30,10 @@ Plug 'L3MON4D3/LuaSnip'
 Plug 'saadparwaiz1/cmp_luasnip'
 
 Plug 'neovim/nvim-lspconfig' " Конфигурация LSP
+Plug 'phaazon/hop.nvim' " Быстрая навигация по тексту
+
+Plug 'nvim-lua/plenary.nvim'             " Зависимость для Telescope
+Plug 'nvim-telescope/telescope.nvim', {'tag': '0.1.0'} " Поиск файлов и других объектов
 
 " Темы и подсветка
 Plug 'morhetz/gruvbox'
@@ -458,6 +462,14 @@ ls.snippets = {
 EOF
 
 " ========================================
+" Настраиваем быструю навигацию hop.nvim
+" ========================================
+
+lua << EOF
+require'hop'.setup{}
+EOF
+
+" ========================================
 " Горячие клавиши
 " ========================================
 
@@ -552,6 +564,8 @@ nnoremap <silent> <Leader>mp :MarkdownPreview<CR>
 
 " Горячая клавиша для остановки предпросмотра Markdown
 nnoremap <silent> <Leader>mc :MarkdownPreviewStop<CR>
+
+nnoremap <silent> <leader>w <cmd>HopWord<CR>
 
 " ========================================
 " Автоматическое открытие nvim-tree и toggleterm при запуске NeoVIM (IDE режим)

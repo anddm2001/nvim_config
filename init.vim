@@ -16,6 +16,20 @@ Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 Plug 'simrat39/symbols-outline.nvim'
 Plug 'preservim/tagbar'
 Plug 'romgrk/barbar.nvim'
+Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && npm install' }
+
+" Автодополнение
+Plug 'hrsh7th/nvim-cmp'
+Plug 'hrsh7th/cmp-nvim-lsp'
+Plug 'hrsh7th/cmp-buffer'
+Plug 'hrsh7th/cmp-path'
+Plug 'hrsh7th/cmp-cmdline'
+
+" Snippets
+Plug 'L3MON4D3/LuaSnip'
+Plug 'saadparwaiz1/cmp_luasnip'
+
+Plug 'neovim/nvim-lspconfig' " Конфигурация LSP
 
 " Темы и подсветка
 Plug 'morhetz/gruvbox'
@@ -88,6 +102,16 @@ let g:tagbar_autofocus = 0
 
 " Настройки автодополнения
 set completeopt=menuone,noinsert,noselect
+
+" Настройки для markdown-preview.nvim
+lua << EOF
+vim.g.mkdp_auto_start = 1                  -- Автоматически открывать предпросмотр при открытии Markdown
+vim.g.mkdp_auto_close = 1                  -- Автоматически закрывать предпросмотр при выходе из файла
+vim.g.mkdp_refresh_slow = 1                -- Обновление предпросмотра медленно (для больших файлов)
+EOF
+
+" Настройка отступов для Markdown
+autocmd FileType markdown setlocal shiftwidth=2 tabstop=2
 
 lua << EOF
 local colorschemes = { "gruvbox", "tokyonight", "onedark", "nightfox", "dracula", "solarized", "everforest" }
@@ -349,6 +373,91 @@ end
 EOF
 
 " ========================================
+" Настраиваем nvim-cmp и luasnip
+" ========================================
+
+lua << EOF
+-- Настройка LuaSnip
+require'luasnip'.config.set_config {
+  history = true,
+  updateevents = "TextChanged,TextChangedI",
+}
+
+-- Настройка nvim-cmp
+local cmp = require'cmp'
+
+cmp.setup({
+  snippet = {
+    expand = function(args)
+      require'luasnip'.lsp_expand(args.body)
+    end,
+  },
+  mapping = cmp.mapping.preset.insert({
+    ['<C-b>'] = cmp.mapping.scroll_docs(-4),
+    ['<C-f>'] = cmp.mapping.scroll_docs(4),
+    ['<C-Space>'] = cmp.mapping.complete(),
+    ['<C-e>'] = cmp.mapping.abort(),
+    ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Использовать выбранный пункт
+  }),
+  sources = cmp.config.sources({
+    { name = 'nvim_lsp' },
+    { name = 'luasnip' }, -- Snippets
+  }, {
+    { name = 'buffer' },
+  })
+})
+
+-- Настройка для командной строки
+cmp.setup.cmdline(':', {
+  sources = cmp.config.sources({
+    { name = 'path' }
+  }, {
+    { name = 'cmdline' }
+  })
+})
+EOF
+
+" ========================================
+" Настраиваем LSP для языка Markdown
+" ========================================
+
+lua << EOF
+local lspconfig = require'lspconfig'
+
+lspconfig.marksman.setup{
+  filetypes = { "markdown" },
+  cmd = { "marksman", "server" },
+  on_attach = function(client, bufnr)
+    -- Настройка автокоманд и ключевых привязок для LSP
+    local opts = { noremap=true, silent=true }
+    vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gd', '<cmd>lua vim.lsp.buf.definition()<CR>', opts)
+    vim.api.nvim_buf_set_keymap(bufnr, 'n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
+    -- Добавьте другие ключевые привязки по желанию
+  end,
+}
+EOF
+
+" ========================================
+" Настраиваем сниппеты для Markdown
+" ========================================
+
+lua << EOF
+local ls = require'luasnip'
+local s = ls.snippet
+local i = ls.insert_node
+local t = ls.text_node
+
+ls.snippets = {
+  markdown = {
+    s("h1", { t("# "), i(1, "Заголовок 1") }),
+    s("h2", { t("## "), i(1, "Заголовок 2") }),
+    s("link", { t("[["), i(1, "Текст ссылки"), t("]]") }),
+    -- Добавьте другие сниппеты по необходимости
+  },
+}
+EOF
+
+" ========================================
 " Горячие клавиши
 " ========================================
 
@@ -437,6 +546,12 @@ nnoremap <silent> <C-S-l> :call CloseTabsToLeft()<CR>
 
 " Переключение цветовой схемы с помощью <Leader>cs
 nnoremap <silent> <Leader>cs :lua SwitchColorScheme()<CR>
+
+" Горячая клавиша для запуска предпросмотра Markdown
+nnoremap <silent> <Leader>mp :MarkdownPreview<CR>
+
+" Горячая клавиша для остановки предпросмотра Markdown
+nnoremap <silent> <Leader>mc :MarkdownPreviewStop<CR>
 
 " ========================================
 " Автоматическое открытие nvim-tree и toggleterm при запуске NeoVIM (IDE режим)

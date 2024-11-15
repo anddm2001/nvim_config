@@ -35,6 +35,9 @@ Plug 'phaazon/hop.nvim' " Быстрая навигация по тексту
 Plug 'nvim-lua/plenary.nvim'             " Зависимость для Telescope
 Plug 'nvim-telescope/telescope.nvim', {'tag': '0.1.0'} " Поиск файлов и других объектов
 
+" GitHub Copilot
+Plug 'github/copilot.vim'
+
 " Темы и подсветка
 Plug 'morhetz/gruvbox'
 Plug 'folke/tokyonight.nvim'
@@ -116,6 +119,9 @@ EOF
 
 " Настройка отступов для Markdown
 autocmd FileType markdown setlocal shiftwidth=2 tabstop=2
+
+" Отключить автоматические подсказки
+let g:copilot_no_tab_map = v:true
 
 lua << EOF
 local colorschemes = { "gruvbox", "tokyonight", "onedark", "nightfox", "dracula", "solarized", "everforest" }
@@ -566,6 +572,10 @@ nnoremap <silent> <Leader>mp :MarkdownPreview<CR>
 nnoremap <silent> <Leader>mc :MarkdownPreviewStop<CR>
 
 nnoremap <silent> <leader>w <cmd>HopWord<CR>
+
+" Назначить клавишу для вызова Copilot
+inoremap <silent><C-J> <Plug>(copilot-next)
+inoremap <silent><C-K> <Plug>(copilot-previous)
 
 " ========================================
 " Автоматическое открытие nvim-tree и toggleterm при запуске NeoVIM (IDE режим)
